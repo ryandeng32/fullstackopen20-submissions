@@ -1,24 +1,33 @@
 import React from 'react';
+import DisplayCountries from './DisplayCountries';
 import DisplayCountry from './DisplayCountry';
 
-const Filter = ({ country, filter, handleCountry }) => {
+const Filter = ({ show, setShow, filter, handleFilter, shown }) => {
     let result;
-    if (!country || filter.length > 10) {
+    const handleShow = (i) => {
+        let newShow = [...show];
+        newShow[i] = !show[i];
+        setShow(newShow);
+    };
+    if (!filter || shown.length > 10) {
         result = 'Too many matches, specify another filter';
-    } else if (filter.length == 1) {
-        result = <DisplayCountry country={filter[0]} />;
-    } else if (filter.length > 0) {
-        result = filter.map((one, i) => {
-            return <div key={one.name}>{one.name}</div>;
-        });
+    } else if (shown.length == 1) {
+        result = <DisplayCountry country={shown[0]} />;
+    } else if (shown.length > 0) {
+        result = (
+            <DisplayCountries
+                shown={shown}
+                handleShow={handleShow}
+                show={show}
+            />
+        );
     } else {
         result = 'No country found';
     }
     return (
         <>
             <div>
-                find countries{' '}
-                <input value={country} onChange={handleCountry} />
+                find countries <input value={filter} onChange={handleFilter} />
             </div>
             {result}
         </>

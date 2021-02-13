@@ -2,31 +2,34 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import Filter from './components/Filter';
 const App = () => {
-    const [country, setCountry] = useState('');
-    const [all, setAll] = useState([]);
-    const [filter, setFilter] = useState([]);
+    const [filter, setFilter] = useState('');
+    const [data, setData] = useState([]);
+    const [shown, setShown] = useState([]);
+    const [show, setShow] = useState([]);
     useEffect(() => {
         axios
             .get('https://restcountries.eu/rest/v2/all')
-            .then((res) => setAll(res.data));
+            .then((res) => setData(res.data));
     }, []);
 
-    const handleCountry = (e) => {
-        let newCountry = e.target.value;
-        setCountry(newCountry);
-        setFilter(
-            all.filter((one) =>
-                one.name.toLowerCase().includes(newCountry.toLowerCase())
-            )
+    const handleFilter = (e) => {
+        let newFilter = e.target.value;
+        setFilter(newFilter);
+        let newShown = data.filter((country) =>
+            country.name.toLowerCase().includes(newFilter.toLowerCase())
         );
+        setShown(newShown);
+        setShow(new Array(newShown.length).fill(false));
     };
 
     return (
         <>
             <Filter
-                country={country}
+                show={show}
+                setShow={setShow}
                 filter={filter}
-                handleCountry={handleCountry}
+                handleFilter={handleFilter}
+                shown={shown}
             />
         </>
     );
