@@ -23,6 +23,12 @@ const App = () => {
           )
         : persons;
 
+    const setMessage = ({ message, type }) => {
+        setErrorMessage({ message, type });
+        setTimeout(() => {
+            setErrorMessage({ ...errorMessage, message: null });
+        }, 1000);
+    };
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -54,16 +60,15 @@ const App = () => {
         service
             .create({ name: newName, number: newNumber })
             .then((res) => setPersons(persons.concat(res)));
-        setErrorMessage({ message: `added ${newName}`, type: 'success' });
-        setTimeout(() => {
-            setErrorMessage({ ...errorMessage, message: null });
-        }, 1000);
+        setMessage({ message: `added ${newName}`, type: 'success' });
         setNewName('');
         setNewNumber('');
     };
 
     const handleDelete = (id) => {
-        service.remove(id);
+        service.remove(id).catch(() => {
+            setMessage({ message: 'already deleted', type: 'error' });
+        });
         setPersons(persons.filter((person) => person.id !== id));
     };
     return (
