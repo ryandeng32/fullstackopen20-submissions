@@ -6,6 +6,7 @@ const cors = require('cors');
 
 const app = express();
 
+app.use(express.static('build'));
 app.use(cors());
 app.use(express.json());
 app.use(
@@ -25,7 +26,6 @@ app.use(
         return tokenList.join(' ');
     })
 );
-app.use(express.static('build'));
 
 app.get('/api/persons', (req, res) => {
     Person.find({}).then((persons) => {
@@ -64,7 +64,9 @@ app.put('/api/persons/:id', (req, res, next) => {
         name: body.name,
         phone: body.phone,
     };
-    Person.findByIdAndUpdate(req.params.id, person, { new: true })
+
+    const opts = { new: true, runValidators: true };
+    Person.findByIdAndUpdate(req.params.id, person, opts)
         .then((updatedPerson) => {
             res.json(updatedPerson);
         })
@@ -73,24 +75,19 @@ app.put('/api/persons/:id', (req, res, next) => {
         });
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body;
-    if (!body.name || !body.phone) {
-        return res.status(400).json({ error: 'no name or number provided' });
-    }
-    Person.find({ name: body.name }).then((result) => {
-        if (result.length !== 0) {
-            res.status(400).send({ error: 'name must be unique' });
-        } else {
-            const person = new Person({
-                name: body.name,
-                phone: body.phone,
-            });
-            person.save().then((savedPerson) => {
-                res.json(savedPerson);
-            });
-        }
+
+    const person = new Person({
+        name: body.name,
+        phone: body.phone,
     });
+    person
+        .save()
+        .then((savedPerson) => {
+            res.json(savedPerson);
+        })
+        .catch((error) => next(error));
 });
 
 app.get('/info', (req, res) => {
@@ -110,6 +107,11 @@ const errorHandler = (error, req, res, next) => {
 
     if (error.name === 'CastError') {
         return res.status(400).send({ error: 'malformatted id' });
+    } else if (
+        error.name === 'ValidationError' ||
+        error.name === 'MongoError'
+    ) {
+        return res.status(400).send({ error: error.message });
     }
 
     next(error);

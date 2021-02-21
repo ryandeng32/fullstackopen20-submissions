@@ -27,7 +27,7 @@ const App = () => {
         setErrorMessage({ message, type });
         setTimeout(() => {
             setErrorMessage({ ...errorMessage, message: null });
-        }, 1000);
+        }, 3000);
     };
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -50,7 +50,13 @@ const App = () => {
                                     person.id === persons[i].id ? res : person
                                 )
                             )
-                        );
+                        )
+                        .catch((error) => {
+                            setMessage({
+                                message: error.response.data.error,
+                                type: 'error',
+                            });
+                        });
                     setNewName('');
                     setNewNumber('');
                 }
@@ -59,8 +65,16 @@ const App = () => {
         }
         service
             .create({ name: newName, phone: newNumber })
-            .then((res) => setPersons(persons.concat(res)));
-        setMessage({ message: `added ${newName}`, type: 'success' });
+            .then((res) => {
+                setPersons(persons.concat(res));
+                setMessage({ message: `added ${newName}`, type: 'success' });
+            })
+            .catch((error) => {
+                setMessage({
+                    message: error.response.data.error,
+                    type: 'error',
+                });
+            });
         setNewName('');
         setNewNumber('');
     };
