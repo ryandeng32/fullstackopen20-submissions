@@ -36,13 +36,13 @@ const App = () => {
             if (persons[i].name === newName) {
                 if (
                     window.confirm(
-                        `${newName} is already added to phonebook, replace the old number with a new one?`
+                        `${newName} is already added to phonebook, replace the old phone with a new one?`
                     )
                 ) {
                     service
                         .update(persons[i].id, {
                             name: newName,
-                            number: newNumber,
+                            phone: newNumber,
                         })
                         .then((res) =>
                             setPersons(
@@ -58,7 +58,7 @@ const App = () => {
             }
         }
         service
-            .create({ name: newName, number: newNumber })
+            .create({ name: newName, phone: newNumber })
             .then((res) => setPersons(persons.concat(res)));
         setMessage({ message: `added ${newName}`, type: 'success' });
         setNewName('');
