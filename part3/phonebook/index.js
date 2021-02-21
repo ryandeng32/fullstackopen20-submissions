@@ -3,7 +3,7 @@ const Person = require('./models/person');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-
+const process = require('process');
 const app = express();
 
 app.use(express.static('build'));
@@ -49,7 +49,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
     Person.findByIdAndDelete(req.params.id)
-        .then((result) => {
+        .then(() => {
             res.status(204).end();
         })
         .catch((error) => {
