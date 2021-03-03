@@ -1,5 +1,5 @@
 # Full Stack Open
-My submissions to the fullstackopen course by **University of Helsinki**
+My notes and submissions to the fullstackopen course by **University of Helsinki**
 
 Checkout the course -> [here](https://fullstackopen.com/en/)
 
